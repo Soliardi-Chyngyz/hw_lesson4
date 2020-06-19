@@ -4,13 +4,13 @@ import java.util.Random;
 
 public class Main {
 
-    public static int bossHealth = 1000;
+    public static int bossHealth = 1300;
     public static int bossDamage = 50;
     public static String bossDefenceType = "";
-    public static int[] heroesHealth = {260, 250, 270, 300, 400, 250, 230};
-    public static int[] heroesDamage = {20, 15, 25, 10, 15, 10};
+    public static int[] heroesHealth = {260, 250, 270, 300, 400, 250, 230, 260};
+    public static int[] heroesDamage = {20, 15, 25, 10, 15, 10, 20};
     public static String[] heroesAttackType = {"Physical",
-            "Magical", "Kinetic", "Medic", "Golem", "Lucky", "Berserk"};
+            "Magical", "Kinetic", "Medic", "Golem", "Lucky", "Berserk", "Thor"};
     public static int healing = 40;
 
     public static void main(String[] args) {
@@ -34,6 +34,9 @@ public class Main {
             bossHits();
         }
         heal();
+        lucky();
+        berserk();
+        thor();
         printStatistics();
     }
 
@@ -59,7 +62,8 @@ public class Main {
         System.out.println("Medic's health: " + heroesHealth[3]);
         System.out.println("Golem's health: " + heroesHealth[4]);
         System.out.println("Lucky's health: " + heroesHealth[5]);
-        System.out.println("Berserk's health" + heroesHealth[6]);
+        System.out.println("Berserk's health: " + heroesHealth[6]);
+        System.out.println("Thor's health: " + heroesHealth[7]);
         System.out.println("________________");
     }
 
@@ -69,17 +73,10 @@ public class Main {
                 if (heroesHealth[i] - bossDamage < 0) {
                     heroesHealth[i] = 0;
                 } else {
-                    if (heroesHealth[5] > 0 || heroesHealth[4] > 0) {
+                    if (heroesHealth[4] > 0) {
                         int is = bossDamage / 5;
                         if (i == 4) {
                             heroesHealth[4] = heroesHealth[4] - bossDamage - 50;
-                        } else if (i == 5) {
-                            Random random = new Random();
-                            int r = random.nextInt(1);
-                            if (r == 1) {
-                                heroesHealth[5] = heroesHealth[5] - bossDamage + bossDamage;
-                                System.out.println("Lucky увернулся от удара Босса");
-                            }
                         } else {
                             heroesHealth[i] = heroesHealth[i] - bossDamage + is;
                         }
@@ -124,7 +121,46 @@ public class Main {
         }
     }
 
-    public static void golim() {
+    public static void lucky() {
+        if (heroesHealth[5] > 0) {
+            Random random = new Random();
+            int r = random.nextInt(3);
+            if (r == 1 && heroesHealth[4] > 0) {
+                heroesHealth[5] = heroesHealth[5] + 40;
+                System.out.println("Lucky увернулся от удара Босса");
+            } else if (r == 1 && heroesHealth[4] <= 0) {
+                heroesHealth[5] = heroesHealth[5] + bossDamage;
+                System.out.println("Lucky увернулся от удара Босса");
+            }
+        }
+    }
 
+    public static void berserk() {
+        if (heroesHealth[6] > 0) {
+            Random random = new Random();
+            int event = random.nextInt(4);
+            if (event == 1) {
+                Random pardon = new Random();
+                int r = pardon.nextInt(9);
+                int defense = 20 - r + 10;
+                heroesHealth[6] = heroesHealth[6] + defense;
+                heroesDamage[5] = defense;
+                System.out.println("Berserk's блокировал часть удара и вернул Босу " + heroesDamage[5]);
+            }
+        }
+    }
+
+    public static void thor() {
+        if (heroesHealth[7] > 0) {
+            Random random = new Random();
+            int event = random.nextInt(4);
+            if (event == 1) {
+                heroesHealth[4] += 60;
+                System.out.println("Thor заморозил Боса на 1 раунд");
+                for (int i = 0; i < heroesHealth.length; i++) {
+                    heroesHealth[i] = heroesHealth[i] + bossDamage - 10;
+                }
+            }
+        }
     }
 }
